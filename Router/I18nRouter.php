@@ -19,6 +19,7 @@
 namespace JMS\I18nRoutingBundle\Router;
 
 use JMS\I18nRoutingBundle\Exception\NotAcceptableLanguageException;
+use JMS\I18nRoutingBundle\Locale\LocaleProviderInterface;
 
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
@@ -38,7 +39,7 @@ class I18nRouter extends Router
     private $hostMap = array();
     private $i18nLoaderId;
     private $container;
-    private $defaultLocale;
+    private $localeProvider;
     private $redirectToHost = true;
     private $localeResolver;
 
@@ -89,9 +90,9 @@ class I18nRouter extends Router
         $this->i18nLoaderId = $id;
     }
 
-    public function setDefaultLocale($locale)
+    public function setLocaleProvider(LocaleProviderInterface $localeProvider)
     {
-        $this->defaultLocale = $locale;
+        $this->localeProvider = $localeProvider;
     }
 
     /**
@@ -106,7 +107,7 @@ class I18nRouter extends Router
         } else if ($currentLocale) {
             $locale = $currentLocale;
         } else {
-            $locale = $this->defaultLocale;
+            $locale = $this->localeProvider ? $this->localeProvider->getDefaultLocale() : '';
         }
 
         // if the locale is changed, and we have a host map, then we need to

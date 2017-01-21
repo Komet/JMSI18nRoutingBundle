@@ -34,6 +34,7 @@ final class Configuration implements ConfigurationInterface
                 ->validate()
                     ->always()
                     ->then(function($v) {
+                        /*
                         if ($v['hosts']) {
                             foreach ($v['locales'] as $locale) {
                                 if (!isset($v['hosts'][$locale])) {
@@ -51,6 +52,7 @@ final class Configuration implements ConfigurationInterface
 
                             throw $ex;
                         }
+                        */
 
                         return $v;
                     })
@@ -67,7 +69,8 @@ final class Configuration implements ConfigurationInterface
                     })
                 ->end()
                 ->children()
-                    ->scalarNode('default_locale')->isRequired()->end()
+                    ->scalarNode('locale_provider')->defaultValue('default')->end()
+                    ->scalarNode('default_locale')->defaultValue('')->end()
                     ->arrayNode('locales')
                         ->beforeNormalization()
                             ->ifString()

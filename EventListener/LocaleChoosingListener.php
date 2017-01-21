@@ -19,6 +19,7 @@
 namespace JMS\I18nRoutingBundle\EventListener;
 
 use JMS\I18nRoutingBundle\Router\LocaleResolverInterface;
+use JMS\I18nRoutingBundle\Locale\LocaleProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -37,14 +38,12 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
  */
 class LocaleChoosingListener
 {
-    private $defaultLocale;
-    private $locales;
+    private $localeProvider;
     private $localeResolver;
 
-    public function __construct($defaultLocale, array $locales, LocaleResolverInterface $localeResolver)
+    public function __construct(LocaleProviderInterface $localeProvider, LocaleResolverInterface $localeResolver)
     {
-        $this->defaultLocale = $defaultLocale;
-        $this->locales = $locales;
+        $this->localeProvider = $localeProvider;
         $this->localeResolver = $localeResolver;
     }
 
@@ -64,7 +63,7 @@ class LocaleChoosingListener
             return;
         }
 
-        $locale = $this->localeResolver->resolveLocale($request, $this->locales) ?: $this->defaultLocale;
+        $locale = $this->localeResolver->resolveLocale($request, $this->localeProvider->getLocales()) ?: $this->localeProvider->getDefaultLocale();
         $request->setLocale($locale);
 
         $params = $request->query->all();
